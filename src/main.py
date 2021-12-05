@@ -1,8 +1,8 @@
 import os
 from functools import reduce
 
-from src import utils
-from src.get_ips import *
+import utils
+from get_ips import *
 
 
 def collect_and_clean(*list_of_ips: Iterable[Iterable[str]]) -> Iterable[str]:
