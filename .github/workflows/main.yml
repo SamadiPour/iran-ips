@@ -1,0 +1,78 @@
+name: Release
+
+on:
+#   schedule:
+#     - cron: '0 0 */10 * *'
+  workflow_dispatch:
+
+jobs:
+  resources:
+    name: Get Resources
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Download all resources
+        run: |
+          mkdir -p resources
+          rm -rf resources/*
+          cd scripts || exit
+
+          sh ito_gov_downloader.sh
+          sh geolite2_downloader.sh ${{ secrets.GEOLITE2_TOKEN }}
+          sh ip2location_downloader.sh ${{ secrets.IP2LOCATION_TOKEN }}
+
+
+  build:
+    name: Build Output
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Setup Go 1.x.y
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+
+      - name: Env
+        run: |
+          echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          sudo apt update
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run python program
+        run: |
+          python src/main.py
+#       - name: Build .dat file
+#         if: ${{ env.SHOULD_UPDATE }}
+#         run: |
+#           git clone https://github.com/v2fly/domain-list-community
+#           rm -rf domain-list-community/data/*
+          
+#           mv output/ir_domains.txt domain-list-community/data/ir
+#           mv output/other_domains.txt domain-list-community/data/other
+#           cp src/data/ads.txt domain-list-community/data/ads
+          
+#           cd domain-list-community
+#           go run ./ --outputdir=../output
+#           cd ../output
+#           mv dlc.dat iran.dat
+      - name: Upload result as release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "output/*.*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.TAG_NAME }}
+          name: ${{ env.RELEASE_NAME }}
