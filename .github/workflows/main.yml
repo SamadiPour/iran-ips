@@ -6,32 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  resources:
-    name: Get Resources
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9.7'
-
-      - name: Download all resources
-        run: |
-          mkdir -p resources
-          rm -rf resources/*
-          cd scripts || exit
-
-          sh ito_gov_downloader.sh
-          sh geolite2_downloader.sh ${{ secrets.GEOLITE2_TOKEN }}
-          sh ip2location_downloader.sh ${{ secrets.IP2LOCATION_TOKEN }}
-
-
   build:
     name: Build Output
-    needs: resources
     runs-on: ubuntu-latest
 
     steps:
@@ -52,14 +28,26 @@ jobs:
           echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
           echo "RELEASE_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
           
+      - name: Download all resources
+        run: |
+          mkdir -p resources
+          rm -rf resources/*
+          cd scripts || exit
+
+          sh ito_gov_downloader.sh
+          sh geolite2_downloader.sh ${{ secrets.GEOLITE2_TOKEN }}
+          sh ip2location_downloader.sh ${{ secrets.IP2LOCATION_TOKEN }}
+          
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           sudo apt update
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
       - name: Run python program
         run: |
           python src/main.py
+
 #       - name: Build .dat file
 #         if: ${{ env.SHOULD_UPDATE }}
 #         run: |
@@ -74,6 +62,7 @@ jobs:
 #           go run ./ --outputdir=../output
 #           cd ../output
 #           mv dlc.dat iran.dat
+      
       - name: Upload result as release
         uses: ncipollo/release-action@v1
         with:
