@@ -25,6 +25,7 @@ def geo_lite2() -> Iterable[str]:
         for line in csv_reader:
             if line[4] == 'IR':
                 iran_code = line[0]
+                break
 
     with open('resources/GeoLite2-Country-Blocks-IPv4.csv', 'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
