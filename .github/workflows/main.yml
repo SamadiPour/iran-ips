@@ -60,7 +60,7 @@ jobs:
           go run ./
           cd ..
 
-          mv geoip/output/dat/irip.dat /output
+          cp geoip/output/dat/irip.dat /output
       
       - name: Upload result as release
         uses: ncipollo/release-action@v1
