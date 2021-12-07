@@ -21,7 +21,7 @@ jobs:
       - name: Setup Go 1.x.y
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.16
+          go-version: ^1.17.1
 
       - name: Env
         run: |
@@ -48,20 +48,19 @@ jobs:
         run: |
           python src/main.py
 
-#       - name: Build .dat file
-#         if: ${{ env.SHOULD_UPDATE }}
-#         run: |
-#           git clone https://github.com/v2fly/domain-list-community
-#           rm -rf domain-list-community/data/*
+      - name: Build .dat file
+        run: |
+          git clone https://github.com/v2fly/geoip.git
+          rm -rf geoip/config*
           
-#           mv output/ir_domains.txt domain-list-community/data/ir
-#           mv output/other_domains.txt domain-list-community/data/other
-#           cp src/data/ads.txt domain-list-community/data/ads
+          cp output/iran-ips.txt geoip/ir.txt
+          cp v2ray_config.json geoip/config.json
           
-#           cd domain-list-community
-#           go run ./ --outputdir=../output
-#           cd ../output
-#           mv dlc.dat iran.dat
+          cd geoip
+          go run ./
+          cd ..
+
+          mv geoip/output/dat/irip.dat /output
       
       - name: Upload result as release
         uses: ncipollo/release-action@v1
