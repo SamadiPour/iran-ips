@@ -53,7 +53,7 @@ jobs:
           git clone https://github.com/v2fly/geoip.git
           rm -rf geoip/config*
           
-          cp output/iran-ips.txt geoip/ir.txt
+          cp output/iran_ips.txt geoip/ir.txt
           cp v2ray_config.json geoip/config.json
           
           cd geoip
