@@ -13,21 +13,7 @@ def collect_and_clean(*list_of_ips: Iterable[Iterable[str]]) -> Iterable[ipaddre
     ip_set = filter(lambda x: x is not None, ip_set)
     ip_set = list(ip_set)
 
-    subset_indexes = set()
-
-    for i in range(0, len(ip_set)):
-        for j in range(i + 1, len(ip_set)):
-            x = ip_set[i]
-            y = ip_set[j]
-
-            if x.subnet_of(y):
-                subset_indexes.add(i)
-                continue
-            elif y.subnet_of(x):
-                subset_indexes.add(j)
-
-    for i in sorted(subset_indexes, reverse=True):
-        del ip_set[i]
+    utils.remove_subnet_ips(ip_set)
 
     return sorted(ip_set)
 
