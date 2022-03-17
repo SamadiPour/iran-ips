@@ -1,8 +1,8 @@
 name: Release
 
 on:
-#   schedule:
-#     - cron: '0 0 */10 * *'
+  schedule:
+    - cron: '0 0 */10 * *'
   workflow_dispatch:
 
 jobs:
