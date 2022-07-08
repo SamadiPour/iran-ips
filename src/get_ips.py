@@ -1,6 +1,8 @@
 import csv
 from collections import Iterable
 
+import requests as requests
+
 
 def ito_gov() -> Iterable[str]:
     ips = set()
@@ -30,3 +32,8 @@ def geo_lite2() -> Iterable[str]:
     with open('resources/GeoLite2-Country-Blocks-IPv4.csv', 'r') as f:
         csv_reader = csv.reader(f, delimiter=',')
         return set(line[0] for line in csv_reader if line[2] == iran_code)
+
+
+def get_arvan() -> Iterable[str]:
+    request = requests.get('https://www.arvancloud.com/en/ips.txt')
+    return request.text.splitlines()

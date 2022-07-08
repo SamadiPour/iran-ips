@@ -22,7 +22,7 @@ if __name__ == '__main__':
     if not os.path.exists("output"):
         os.mkdir("output")
 
-    ips = collect_and_clean(ito_gov(), geo_lite2(), ip2location())
+    ips = collect_and_clean(ito_gov(), geo_lite2(), ip2location(), get_arvan())
     ips_str = map(str, ips)
 
     utils.save_to_file('output/iran_ips.txt', "\n".join(ips_str))
